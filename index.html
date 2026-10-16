@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ScriptDesk CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f1;--card:#fff;--ink:#12221e;--mut:#5a6b66;--line:#d6e0dc;--ac:#0b6e5f;--acs:#d9f0ea;--hi:#e8f4f1;--bad:#b3261e;--inv:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1614;--card:#15211e;--ink:#e5f0ec;--mut:#92a8a1;--line:#263733;--ac:#4fd1b5;--acs:#173a33;--hi:#1a2b27;--bad:#ff8a80;--inv:#06201b}}
+:root[data-theme="dark"]{--bg:#0d1614;--card:#15211e;--ink:#e5f0ec;--mut:#92a8a1;--line:#263733;--ac:#4fd1b5;--acs:#173a33;--hi:#1a2b27;--bad:#ff8a80;--inv:#06201b}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 'Bricolage Grotesque',system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.5px}.brand span{color:var(--ac)}
+nav{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:8px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+nav button{white-space:nowrap}nav button.on{background:var(--ac);color:var(--inv);border-color:var(--ac);font-weight:600}
+button.pri{background:var(--ac);color:var(--inv);border-color:var(--ac);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 4px;font-size:20px;letter-spacing:-.3px}h3{margin:0 0 8px;font-size:16px}.mut{color:var(--mut);font-size:13px}
+input,select,textarea{font:inherit;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+textarea{min-height:150px;resize:vertical}label{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:520px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:13px;color:var(--mut);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:30px;line-height:1.1;font-weight:800}
+.bar{height:10px;background:var(--hi);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.crit{display:grid;grid-template-columns:110px 1fr 54px;gap:10px;align-items:center;margin:8px 0}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;background:var(--acs);font-size:12px;font-weight:600}
+.err{color:var(--bad);font-size:13px;margin-top:8px}.big{font-size:44px;font-weight:800;color:var(--ac);line-height:1}
+.auth{max-width:420px;margin:7vh auto 0}
+@media(prefers-reduced-motion:no-preference){.card{animation:in .25s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
+</style></head><body><div class="wrap" id="app"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const K='scriptdesk_v1';
+const SC=[
+{id:1,t:'Late delivery',b:'Maria says her order is 5 days late and she is upset. Greet her, show you care, explain you will track the order and give an update, then close the call.',k:['order','track','deliver','update','days','shipping']},
+{id:2,t:'Double charge',b:'John was billed twice for one purchase. Greet him, apologize, verify the account, explain the refund, then close the call.',k:['charge','refund','billing','account','verify','receipt']},
+{id:3,t:'Forgot password',b:'A customer cannot log in. Greet them, reassure them, verify identity, guide the password reset, then close the call.',k:['password','reset','verify','email','security','link']}];
+function seed(){return{users:[{u:'teacher',p:'teacher123',n:'Teacher Demo',r:'teacher'},{u:'ana',p:'demo',n:'Ana Reyes',r:'student'},{u:'ben',p:'demo',n:'Ben Cruz',r:'student'}],
+customers:[{id:1,n:'Maria Santos',e:'maria@mail.com',t:'0917 000 1111'},{id:2,n:'John Dela Cruz',e:'john@mail.com',t:'0918 000 2222'}],
+tickets:[{id:1,c:1,s:'Order arrived 5 days late',p:'High',st:'Open'},{id:2,c:2,s:'Charged twice for one order',p:'Medium',st:'In progress'}],
+scores:[{id:1,u:'ana',sc:1,parts:[25,25,25,15],total:90,d:'2026-10-12'},{id:2,u:'ben',sc:2,parts:[15,15,17,15],total:62,d:'2026-10-13'}],session:null}}
+let db;try{db=JSON.parse(localStorage.getItem(K))}catch(e){}if(!db)db=seed();
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}};
+const me=()=>db.users.find(x=>x.u===db.session);
+let tab='',mode='login',err='',sel=1,draft='',last=null;
+function score(text,sc){const t=text.toLowerCase(),has=a=>a.filter(w=>t.includes(w)).length,fb=[];
+const g=has(['good morning','good afternoon','good evening','hello','hi,','thank you for calling','thank you for contacting','my name is','welcome']);
+const e=has(['sorry','apolog','understand','frustrat','i can imagine','inconvenien','patience']);
+const m=sc.k.filter(w=>t.includes(w)).length;
+const c=has(['anything else','thank you for','have a great','have a nice','good day','take care']);
+const P=[g>=2?25:g?15:0,e>=2?25:e?15:0,Math.round(25*Math.min(1,m/3)),c>=2?25:c?15:0];
+fb.push(P[0]<25?'Greeting: say hello, the time of day, and your name.':'Greeting: clear and friendly.');
+fb.push(P[1]<25?'Empathy: acknowledge the feeling, e.g. "I understand" and "I am sorry".':'Empathy: well acknowledged.');
+fb.push(P[2]<25?'Accuracy: mention more case details such as '+sc.k.slice(0,4).join(', ')+'.':'Accuracy: covers the key case details.');
+fb.push(P[3]<25?'Closing: ask "Is there anything else?" and thank the customer.':'Closing: polite and complete.');
+let total=P.reduce((a,b)=>a+b,0);if(text.trim().split(/\s+/).length<20){total=Math.round(total*.6);fb.push('Too short: write at least 20 words (score reduced).')}
+return{parts:P,total,fb}}
+const fin=s=>s.final??s.total;
+function render(){const a=$('#app'),u=me();if(!u){a.innerHTML=authView();return}
+const T=u.r==='student'?[['practice','Practice'],['scores','My scores'],['customers','Customers'],['tickets','Tickets']]:[['dash','Dashboard'],['customers','Customers'],['tickets','Tickets'],['rubric','Rubric']];
+if(!T.some(x=>x[0]===tab))tab=T[0][0];
+const V={practice,scores,dash,customers,tickets,rubric}[tab]();
+a.innerHTML=`<header><div class="brand">Script<span>Desk</span> <span class="mut" style="font-weight:400">CRM</span></div><div><span class="mut">${esc(u.n)} (${u.r})</span> <button onclick="logout()">Log out</button></div></header><nav>${T.map(x=>`<button class="${tab===x[0]?'on':''}" onclick="go('${x[0]}')">${x[1]}</button>`).join('')}</nav>${V}`}
+const go=t=>{tab=t;render()};
+function authView(){const L=mode==='login';return`<div class="auth"><div class="brand" style="font-size:34px">Script<span>Desk</span></div><p class="mut">Practice customer-service scripts, get scored instantly, and manage customer records.</p><div class="card"><h2>${L?'Log in':'Create student account'}</h2>${L?'':`<label for="n">Full name</label><input id="n">`}<label for="u">Username</label><input id="u" autocapitalize="none"><label for="p">Password</label><input id="p" type="password"><div class="err">${esc(err)}</div><p><button class="pri" onclick="${L?'login()':'register()'}">${L?'Log in':'Create account'}</button> <button onclick="mode='${L?'reg':'login'}';err='';render()">${L?'New student? Register':'Back to log in'}</button></p></div><p class="mut">Demo: teacher / teacher123 &middot; student: ana / demo</p></div>`}
+function login(){const x=db.users.find(v=>v.u===$('#u').value.trim().toLowerCase()&&v.p===$('#p').value);if(!x){err='Wrong username or password.';return render()}db.session=x.u;err='';tab='';save();render()}
+function register(){const n=$('#n').value.trim(),u=$('#u').value.trim().toLowerCase(),p=$('#p').value;
+if(!n||!u||p.length<4){err='Enter your name, a username, and a password of 4+ characters.';return render()}
+if(db.users.some(v=>v.u===u)){err='That username is taken.';return render()}
+db.users.push({u,p,n,r:'student'});db.session=u;err='';tab='';save();render()}
+function logout(){db.session=null;tab='';save();render()}
+function practice(){const sc=SC.find(x=>x.id==sel);return`<div class="card"><h2>Practice a script</h2><p class="mut">Pick a scenario, write what you would say, then check your score.</p><label for="sel">Scenario</label><select id="sel" onchange="sel=this.value;draft=$('#txt').value;last=null;render()">${SC.map(x=>`<option value="${x.id}" ${x.id==sel?'selected':''}>${x.t}</option>`).join('')}</select><p><b>Situation:</b> ${esc(sc.b)}</p><label for="txt">Your script</label><textarea id="txt" placeholder="Good afternoon, my name is...">${esc(draft)}</textarea><p><button class="pri" onclick="submit()">Score my script</button></p></div>${last?result(last):''}`}
+function result(r){const N=['Greeting','Empathy','Accuracy','Closing'];return`<div class="card"><div class="big">${r.total}<span class="mut" style="font-size:18px"> / 100</span></div>${r.parts.map((v,i)=>`<div class="crit"><span>${N[i]}</span><div class="bar"><i style="width:${v*4}%"></i></div><span>${v}/25</span></div>`).join('')}<h3 style="margin-top:12px">Feedback</h3><ul>${r.fb.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><p class="mut">Saved to My scores. Your teacher can review it.</p></div>`}
+function submit(){const txt=$('#txt').value;draft=txt;if(!txt.trim()){return alert('Write your script first.')}
+const r=score(txt,SC.find(x=>x.id==sel));db.scores.push({id:Date.now(),u:db.session,sc:+sel,parts:r.parts,total:r.total,d:new Date().toISOString().slice(0,10),txt});last=r;save();render()}
+function scores(){const L=db.scores.filter(s=>s.u===db.session).reverse();return`<div class="card"><h2>My scores</h2>${L.length?`<div class="tw"><table><tr><th>Date</th><th>Scenario</th><th>Auto score</th><th>Final score</th><th>Teacher remark</th></tr>${L.map(s=>`<tr><td>${s.d}</td><td>${SC.find(x=>x.id==s.sc).t}</td><td>${s.total}</td><td><b>${fin(s)}</b></td><td>${esc(s.remark||'')}</td></tr>`).join('')}</table></div>`:'<p class="mut">No scores yet. Go to Practice and submit your first script.</p>'}</div>`}
+function dash(){const S=db.scores,avg=S.length?Math.round(S.reduce((a,s)=>a+fin(s),0)/S.length):0,st=db.users.filter(x=>x.r==='student').length;
+return`<div class="stats"><div class="stat"><b>${st}</b>Students</div><div class="stat"><b>${S.length}</b>Submissions</div><div class="stat"><b>${avg}</b>Average score</div><div class="stat"><b>${db.tickets.filter(t=>t.st!=='Resolved').length}</b>Open tickets</div></div><div class="card"><h2>Student submissions</h2><p class="mut">Adjust the final score and leave a remark. Records are saved in this browser.</p><div class="tw"><table><tr><th>Student</th><th>Scenario</th><th>Auto</th><th>Final</th><th>Remark</th><th></th></tr>${S.slice().reverse().map(s=>`<tr><td>${esc(db.users.find(x=>x.u===s.u)?.n||s.u)}<div class="mut">${s.d}</div></td><td>${SC.find(x=>x.id==s.sc).t}</td><td>${s.total}</td><td><input id="f${s.id}" type="number" min="0" max="100" value="${fin(s)}" style="width:76px"></td><td><input id="r${s.id}" value="${esc(s.remark||'')}" placeholder="Remark"></td><td><button onclick="setFinal(${s.id})">Save</button></td></tr>`).join('')}</table></div></div>`}
+function setFinal(id){const s=db.scores.find(x=>x.id===id),v=Math.max(0,Math.min(100,+$('#f'+id).value||0));s.final=v;s.remark=$('#r'+id).value;save();render()}
+function customers(){return`<div class="card"><h2>Customers</h2><div class="row"><div><label for="cn">Name</label><input id="cn"></div><div><label for="ce">Email</label><input id="ce" type="email"></div><div><label for="ct">Phone</label><input id="ct"></div><button class="pri" onclick="addC()">Add customer</button></div></div><div class="card tw"><table><tr><th>Name</th><th>Email</th><th>Phone</th><th>Tickets</th></tr>${db.customers.map(c=>`<tr><td>${esc(c.n)}</td><td>${esc(c.e)}</td><td>${esc(c.t)}</td><td><span class="tag">${db.tickets.filter(t=>t.c===c.id).length}</span></td></tr>`).join('')}</table></div>`}
+function addC(){const n=$('#cn').value.trim();if(!n)return alert('Enter the customer name.');db.customers.push({id:Date.now(),n,e:$('#ce').value,t:$('#ct').value});save();render()}
+function tickets(){return`<div class="card"><h2>Support tickets</h2>${db.customers.length?`<div class="row"><div><label for="tc">Customer</label><select id="tc">${db.customers.map(c=>`<option value="${c.id}">${esc(c.n)}</option>`).join('')}</select></div><div><label for="ts">Issue</label><input id="ts"></div><div><label for="tp">Priority</label><select id="tp"><option>Low</option><option selected>Medium</option><option>High</option></select></div><button class="pri" onclick="addT()">Create ticket</button></div>`:'<p class="mut">Add a customer first.</p>'}</div><div class="card tw"><table><tr><th>Customer</th><th>Issue</th><th>Priority</th><th>Status</th></tr>${db.tickets.map(t=>`<tr><td>${esc(db.customers.find(c=>c.id===t.c)?.n||'')}</td><td>${esc(t.s)}</td><td>${t.p}</td><td><select onchange="setT(${t.id},this.value)">${['Open','In progress','Resolved'].map(o=>`<option ${o===t.st?'selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('')}</table></div>`}
+function addT(){const s=$('#ts').value.trim();if(!s)return alert('Describe the issue.');db.tickets.unshift({id:Date.now(),c:+$('#tc').value,s,p:$('#tp').value,st:'Open'});save();render()}
+function setT(id,v){db.tickets.find(t=>t.id===id).st=v;save();render()}
+function rubric(){return`<div class="card"><h2>Scoring rubric</h2><p class="mut">Each script is scored out of 100 by keyword and phrase checks. Scripts under 20 words are reduced by 40%.</p><div class="tw"><table><tr><th>Criterion</th><th>25 pts</th><th>15 pts</th></tr><tr><td>Greeting</td><td>2+ greeting phrases (hello, good afternoon, my name is)</td><td>1 phrase</td></tr><tr><td>Empathy</td><td>2+ empathy phrases (I am sorry, I understand)</td><td>1 phrase</td></tr><tr><td>Accuracy</td><td colspan="2">Up to 25 pts for scenario keywords found (full marks at 3 of 6)</td></tr><tr><td>Closing</td><td>2+ closing phrases (anything else, thank you for, have a great day)</td><td>1 phrase</td></tr></table></div></div>`}
+render();
+</script></body></html>
